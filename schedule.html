@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Tracker</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .completed {
+            background-color: green;
+        }
+        #backgroundImage {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Daily Tracker</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Task</th>
+                <script>
+                    for (let day = 1; day <= 31; day++) {
+                        document.write(`<th>${String(day).padStart(2, '0')}</th>`);
+                    }
+                </script>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Clean the desk</td>
+                <script>
+                    for (let day = 1; day <= 31; day++) {
+                        document.write('<td data-task="cleanTheDesk" data-day="' + day + '"></td>');
+                    }
+                </script>
+            </tr>
+            <tr>
+                <td>Clean the laptop</td>
+                <script>
+                    for (let day = 1; day <= 31; day++) {
+                        document.write('<td data-task="cleanTheLaptop" data-day="' + day + '"></td>');
+                    }
+                </script>
+            </tr>
+            <tr>
+                <td>Wash the mug</td>
+                <script>
+                    for (let day = 1; day <= 31; day++) {
+                        document.write('<td data-task="washTheMug" data-day="' + day + '"></td>');
+                    }
+                </script>
+            </tr>
+            <tr>
+                <td>Walk 2.5KM</td>
+                <script>
+                    for (let day = 1; day <= 31; day++) {
+                        document.write('<td data-task="walk2.5KM" data-day="' + day + '"></td>');
+                    }
+                </script>
+            </tr>
+            <tr>
+                <td>Focus entire 90 mins on key task</td>
+                <script>
+                    for (let day = 1; day <= 31; day++) {
+                        document.write('<td data-task="focus90Mins" data-day="' + day + '"></td>');
+                    }
+                </script>
+            </tr>
+        </tbody>
+    </table>
+
+    <input type="file" id="fileInput" accept="image/*">
+    <img id="backgroundImage">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cells = document.querySelectorAll('td[data-task]');
+            const savedState = JSON.parse(localStorage.getItem('dailyTrackerState')) || {};
+            const savedImage = localStorage.getItem('backgroundImage');
+
+            // Apply saved state for cells
+            cells.forEach(cell => {
+                const task = cell.getAttribute('data-task');
+                const day = cell.getAttribute('data-day');
+                if (savedState[task] && savedState[task][day]) {
+                    cell.classList.add('completed');
+                }
+
+                cell.addEventListener('click', function() {
+                    cell.classList.toggle('completed');
+
+                    // Update the saved state
+                    if (!savedState[task]) savedState[task] = {};
+                    savedState[task][day] = cell.classList.contains('completed');
+                    localStorage.setItem('dailyTrackerState', JSON.stringify(savedState));
+                });
+            });
+
+            // Handle image upload and display
+            const fileInput = document.getElementById('fileInput');
+            const backgroundImage = document.getElementById('backgroundImage');
+
+            if (savedImage) {
+                backgroundImage.src = savedImage;
+            }
+
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        backgroundImage.src = e.target.result;
+                        localStorage.setItem('backgroundImage', e.target.result);
+                    }
+
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
